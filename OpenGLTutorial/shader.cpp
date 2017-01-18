@@ -2,11 +2,7 @@
 #include <fstream>
 #include <iostream>
 
-static string loadShader(const string& filename);
-static void checkShaderError(GLuint shader, GLuint flag, bool isProgram, const string& errorMessage);
-static GLuint createShader(const string& text, GLenum shaderType);
-
-Shader::Shader(const string& filename)
+Shader::Shader(const std::string& filename)
 {
 	m_program = glCreateProgram();
 	m_shaders[0] = createShader(loadShader(filename + ".vs"), GL_VERTEX_SHADER);
@@ -42,36 +38,33 @@ void Shader::bind()
 	glUseProgram(m_program);
 }
 
-static GLuint createShader(const string& text, GLenum shaderType)
+GLuint Shader::createShader(const std::string& text, unsigned int type)
 {
-	GLuint shader = glCreateShader(shaderType);
+	GLuint shader = glCreateShader(type);
 
 	if (shader == 0)
-	{
-		cerr << "Error: shader creation failed" << endl;
-	}
+		std::cerr << "Error compiling shader type " << type << std::endl;
 
-	const GLchar* shaderSourceStrings[1];
-	GLint shaderSourceStringLengths[1];
+	const GLchar* p[1];
+	p[0] = text.c_str();
+	GLint lengths[1];
+	lengths[0] = text.length();
 
-	shaderSourceStrings[0] = text.c_str();
-	shaderSourceStringLengths[0] = text.length();
-
-	glShaderSource(shader, 1, shaderSourceStrings, shaderSourceStringLengths);
+	glShaderSource(shader, 1, p, lengths);
 	glCompileShader(shader);
 
-	checkShaderError(shader, GL_COMPILE_STATUS, false, "Error: Shader failed to compile: ");
+	checkShaderError(shader, GL_COMPILE_STATUS, false, "Error compiling shader!");
 
 	return shader;
 }
 
-static string loadShader(const string& filename)
+std::string Shader::loadShader(const std::string& fileName)
 {
-	ifstream file;
-	file.open((filename).c_str());
+	std::ifstream file;
+	file.open((fileName).c_str());
 
-	string output;
-	string line;
+	std::string output;
+	std::string line;
 
 	if (file.is_open())
 	{
@@ -83,37 +76,29 @@ static string loadShader(const string& filename)
 	}
 	else
 	{
-		cerr << "Unable to load shader: " << filename << endl;
+		std::cerr << "Unable to load shader: " << fileName << std::endl;
 	}
 
 	return output;
 }
 
-static void checkShaderError(GLuint shader, GLuint flag, bool isProgram, const string& errorMessage)
+void Shader::checkShaderError(GLuint shader, GLuint flag, bool isProgram, const std::string& errorMessage)
 {
 	GLint success = 0;
 	GLchar error[1024] = { 0 };
 
 	if (isProgram)
-	{
 		glGetProgramiv(shader, flag, &success);
-	}
 	else
-	{
 		glGetShaderiv(shader, flag, &success);
-	}
 
 	if (success == GL_FALSE)
 	{
 		if (isProgram)
-		{
 			glGetProgramInfoLog(shader, sizeof(error), NULL, error);
-		}
 		else
-		{
 			glGetShaderInfoLog(shader, sizeof(error), NULL, error);
-		}
 
-		cerr << errorMessage << ": " << error << endl;
+		std::cerr << errorMessage << ": '" << error << "'" << std::endl;
 	}
 }

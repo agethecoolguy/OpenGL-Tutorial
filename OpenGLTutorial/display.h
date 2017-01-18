@@ -8,8 +8,9 @@ class Display
 public:
 	Display(int width, int height, const std::string& title);
 
-	void update();
-	bool isClosed();
+	void Display::clear(float r, float g, float b, float a);
+	void Display::update();
+	bool Display::isClosed();
 
 	virtual ~Display();
 private:

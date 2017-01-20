@@ -8,7 +8,7 @@ Shader::Shader(const std::string& filename)
 	m_shaders[0] = createShader(loadShader(filename + ".vs"), GL_VERTEX_SHADER);
 	m_shaders[1] = createShader(loadShader(filename + ".fs"), GL_FRAGMENT_SHADER);
 
-	for (int i = 0; i < NUM_SHADERS; i++)
+	for (unsigned int i = 0; i < NUM_SHADERS; i++)
 	{
 		glAttachShader(m_program, m_shaders[i]);
 	}
@@ -24,7 +24,7 @@ Shader::Shader(const std::string& filename)
 
 Shader::~Shader()
 {
-	for (int i = 0; i < NUM_SHADERS; i++)
+	for (unsigned int i = 0; i < NUM_SHADERS; i++)
 	{
 		glDetachShader(m_program, m_shaders[i]);
 		glDeleteShader(m_shaders[i]);
@@ -42,8 +42,9 @@ GLuint Shader::createShader(const std::string& text, unsigned int type)
 {
 	GLuint shader = glCreateShader(type);
 
-	if (shader == 0)
+	if (shader == 0) {
 		std::cerr << "Error compiling shader type " << type << std::endl;
+	}
 
 	const GLchar* p[1];
 	p[0] = text.c_str();
@@ -68,9 +69,8 @@ std::string Shader::loadShader(const std::string& fileName)
 
 	if (file.is_open())
 	{
-		while (file.good())
+		while (getline(file, line))
 		{
-			getline(file, line);
 			output.append(line + "\n");
 		}
 	}

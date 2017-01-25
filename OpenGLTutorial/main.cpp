@@ -4,6 +4,7 @@
 #include "display.h"
 #include "shader.h"
 #include "mesh.h"
+#include "Texture.h"
 
 using namespace std;
 
@@ -16,11 +17,13 @@ int main(int argc, char** argv) {
 
 	Mesh mesh(vertices, sizeof(vertices) / sizeof(vertices[0]));
 	Shader shader("./res/basicShader");
+	//Texture texture("./res/bricks.jpg");
 
 	while (!display.isClosed()) {
 		display.clear(0.0f, 0.15f, 0.3f, 1.0f);
 
 		shader.bind();
+		//texture.bind(0);
 		mesh.draw();
 
 		display.update();
